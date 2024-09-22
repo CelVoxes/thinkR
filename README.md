@@ -1,6 +1,8 @@
 thinkR
 ================
 
+![](logo.webp)
+
 thinkR is an R package that enables o-1 like chain of thoughts using
 ollama.
 
@@ -31,6 +33,10 @@ This initiates a local server, which can be verified by visiting
 <http://localhost:11434/>. The page should display “Ollama is running”.
 
 #### Step 3: Think!
+
+Q: How many ’R’s are in strawberry?
+
+A:
 
 ``` r
 library(thinkR)
