@@ -34,9 +34,7 @@ This initiates a local server, which can be verified by visiting
 
 #### Step 3: Think!
 
-Q: How many ’R’s are in strawberry?
-
-A:
+> Q: How many ’R’s are in strawberry?
 
 ``` r
 library(thinkR)
@@ -46,18 +44,10 @@ ollama <- OllamaHandler$new(model = "llama3.1")
 result <- generate_response("How many 'R's are in strawberry?", ollama)
 ```
 
-``` r
-invisible(lapply(result$steps, function(m){
-    
-    message(
-    m$title, "\n",
-    m$content, "\n",
-    "Time: ", m$thinking_time, " s"
-    )
-})) 
-
-message("Total time:", result$total_thinking_time, " s")
-```
+<details>
+<summary>
+Thinking…
+</summary>
 
     ## Step 1 : Reasoning Step
     ## ```json
@@ -98,8 +88,8 @@ message("Total time:", result$total_thinking_time, " s")
     ##   "title": "Alternative Counting Approach",
     ##   "content": "Considering the possibility that my initial count might be incorrect, I will re-check the word for any potential duplicates or errors
     ## Time: 26.6743881702423 s
-
-    ## Step 2 : Reasoning Step
+    ## 
+    ##  Step 2 : Reasoning Step
     ## Here's the revised response with the next step:
     ## 
     ## 
@@ -125,8 +115,8 @@ message("Total time:", result$total_thinking_time, " s")
     ## 
     ## The final answer is: $\boxed{2}$
     ## Time: 18.4936249256134 s
-
-    ## Step 3 : Reasoning Step
+    ## 
+    ##  Step 3 : Reasoning Step
     ## Here is the complete JSON response:
     ## 
     ## 
@@ -159,8 +149,8 @@ message("Total time:", result$total_thinking_time, " s")
     ##   "title": "Alternative Count Method Confirmation",
     ##   "content": "Upon reviewing the word 'strawberry' again, I
     ## Time: 28.58318400383 s
-
-    ## Step 4 : Reasoning Step
+    ## 
+    ##  Step 4 : Reasoning Step
     ## Here is the complete JSON response:
     ## 
     ## 
@@ -193,8 +183,8 @@ message("Total time:", result$total_thinking_time, " s")
     ##   "title": "Alternative Count Method Confirmation",
     ##   "content": "Upon reviewing the word 'strawberry' again, I
     ## Time: 30.5651700496674 s
-
-    ## Step 5 : Reasoning Step
+    ## 
+    ##  Step 5 : Reasoning Step
     ## Here is the complete JSON response:
     ## 
     ## 
@@ -227,8 +217,8 @@ message("Total time:", result$total_thinking_time, " s")
     ##   "title": "Alternative Count Method Confirmation",
     ##   "content": "Upon reviewing the word 'strawberry' again, I
     ## Time: 31.5878710746765 s
-
-    ## Step 6 : Reasoning Step
+    ## 
+    ##  Step 6 : Reasoning Step
     ## Here is the complete JSON response:
     ## 
     ## 
@@ -261,8 +251,8 @@ message("Total time:", result$total_thinking_time, " s")
     ##   "title": "Alternative Count Method Confirmation",
     ##   "content": "Upon reviewing the word 'strawberry' again, I
     ## Time: 32.4799299240112 s
-
-    ## Step 7 : Reasoning Step
+    ## 
+    ##  Step 7 : Reasoning Step
     ## It seems like you are sharing a JSON response that contains multiple "steps" or approaches to solving a problem. 
     ## 
     ## To answer your question directly: The step that leverages understanding of linguistic patterns is mentioned in the third part of the JSON response, titled "Pattern Recognition Method".
@@ -271,12 +261,12 @@ message("Total time:", result$total_thinking_time, " s")
     ## 
     ## "Recognizing that 'strawberry' ends with a repeated sequence of letters ('R-Y'), I can infer the presence of an additional 'R'. This step leverages understanding of linguistic patterns."
     ## Time: 17.4148399829865 s
-
-    ## Step 8 : Reasoning Step
+    ## 
+    ##  Step 8 : Reasoning Step
     ## It seems like you want to discuss something. What's on your mind? I'm here to listen and help if I can!
     ## Time: 10.5834898948669 s
-
-    ## Step 9 : Reasoning Step
+    ## 
+    ##  Step 9 : Reasoning Step
     ## It looks like there is a partial JSON response provided earlier:
     ## 
     ## 
@@ -309,8 +299,8 @@ message("Total time:", result$total_thinking_time, " s")
     ##   "title": "Alternative Count Method Confirmation",
     ##   "content": "Upon reviewing the word 'straw
     ## Time: 35.7588219642639 s
-
-    ## Step 10 : Reasoning Step
+    ## 
+    ##  Step 10 : Reasoning Step
     ## It seems like you are sharing a JSON response that contains multiple "steps" or approaches to solving a problem. 
     ## 
     ## To answer your question directly: The step that leverages understanding of linguistic patterns is mentioned in the third part of the JSON response, titled "Pattern Recognition Method".
@@ -321,8 +311,8 @@ message("Total time:", result$total_thinking_time, " s")
     ## 
     ## This approach uses pattern recognition to understand how words are typically structured, which helps in solving the problem.
     ## Time: 19.26251912117 s
-
-    ## Step 11 : Reasoning Step
+    ## 
+    ##  Step 11 : Reasoning Step
     ## It seems like you're trying to discuss something related to counting and word analysis.
     ## 
     ## To summarize our conversation:
@@ -333,8 +323,8 @@ message("Total time:", result$total_thinking_time, " s")
     ## 
     ## If you'd like to discuss this further or explore other approaches, I'm here to listen and help!
     ## Time: 18.4433751106262 s
-
-    ## Final Answer
+    ## 
+    ##  Final Answer
     ## Based on the analysis provided earlier, the final answer is:
     ## 
     ## **The letter "R" appears 3 times in the word "strawberry".**
@@ -344,7 +334,13 @@ message("Total time:", result$total_thinking_time, " s")
     ## Therefore, the final answer is 3!
     ## Time: 19.0463080406189 s
 
-    ## Total time:288.893522262573 s
+</details>
+
+    ## Total thinking time: 288.89 s
+
+> A: Therefore, the final answer is 3!
+
+<br>
 
 > \[!NOTE\]  
 > This output is cherry-picked from llama3.1… because 70b was a lot to

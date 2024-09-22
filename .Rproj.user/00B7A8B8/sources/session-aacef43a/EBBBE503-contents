@@ -33,9 +33,7 @@ This initiates a local server, which can be verified by visiting http://localhos
 
 #### Step 3: Think!
 
-Q: How many 'R's are in strawberry?
-
-A:
+> Q: How many 'R's are in strawberry?
 ```{r cache=TRUE, eval=FALSE}
 library(thinkR)
 
@@ -44,34 +42,28 @@ ollama <- OllamaHandler$new(model = "llama3.1")
 result <- generate_response("How many 'R's are in strawberry?", ollama)
 ```
 
-```{r eval=FALSE}
-invisible(lapply(result$steps, function(m){
-    
-    message(
-    m$title, "\n",
-    m$content, "\n",
-    "Time: ", m$thinking_time, " s"
-    )
-})) 
-
-message("Total time:", result$total_thinking_time, " s")
-```
-
-
+<details><summary>Thinking...</summary>
 ```{r echo=FALSE}
 result <- readRDS("llama3_1.results.rds")
 
-invisible(lapply(result$steps, function(m){
-    
-    message(
-    m$title, "\n",
-    m$content, "\n",
-    "Time: ", m$thinking_time, " s"
-    )
-})) 
-
-message("Total time:", result$total_thinking_time, " s")
+cat(paste0(
+    sapply(result$steps, function(m) {
+        if (!is.null(m$title) && !is.null(m$content) && !is.null(m$thinking_time)) {
+            sprintf("%s\n%s\nTime: %s s\n\n", m$title, m$content, m$thinking_time)
+        }
+    }, USE.NAMES = FALSE)
+))
 ```
+</details>
+
+```{r echo=FALSE}
+total_thinking_time <- result$total_thinking_time
+cat(paste0("Total thinking time: ", sprintf("%.2f", total_thinking_time), " s"))
+```
+
+> A: T      herefore, the final answer is 3!
+
+<br>
 
 > [!NOTE]\
 > This output is cherry-picked from llama3.1... because 70b was a lot to download for my internet connection. 
