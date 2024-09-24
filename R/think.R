@@ -136,16 +136,10 @@ OllamaHandler <- R6::R6Class(
 
 # Function to generate response (similar to the Python version)
 generate_response <- function(prompt, api_handler) {
-    # Load system prompt
-    system_prompt_path <- file.path(getwd(), "system_prompt.txt")
-    if (!file.exists(system_prompt_path)) {
-        stop("Error: system_prompt.txt not found at ", system_prompt_path)
-    }
-    SYSTEM_PROMPT <- readLines(system_prompt_path, warn = FALSE)
 
     # Initialize conversation
     messages <- list(
-        list(role = "system", content = paste(SYSTEM_PROMPT, collapse = "\n")),
+        list(role = "system", content = paste(thinkR::SYSTEM_PROMPT, collapse = "\n")),
         list(role = "user", content = prompt),
         list(role = "assistant", content = "Understood. I will now create a detailed reasoning chain following the given instructions, starting with a thorough problem decomposition.")
     )
