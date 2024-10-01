@@ -80,7 +80,7 @@ OllamaHandler <- R6::R6Class(
                     num_predict = max_tokens,
                     temperature = self$temperature,
                     top_p = self$top_p,
-                    stream = FALSE
+                    stream = "false"
                 )
             )
 
@@ -156,36 +156,25 @@ generate_response <- function(prompt, api_handler) {
         thinking_time <- as.numeric(difftime(end_time, start_time, units = "secs"))
         total_thinking_time <- total_thinking_time + thinking_time
 
-        # Parse the JSON response
-        parsed_data <- tryCatch(
-            {
-                jsonlite::fromJSON(step_data$content)
-            },
-            error = function(e) {
-                message("Error parsing JSON response: ", e$message)
-                return(list(title = "Error", content = step_data$content, next_action = "continue"))
-            }
-        )
-        message("Parsed data: ", parsed_data)
         # Store step information
         steps[[length(steps) + 1]] <- list(
-            title = paste("Step", step_count, ":", parsed_data$title),
-            content = parsed_data$content,
+            title = paste("Step", step_count, ":", step_data$title),
+            content = step_data$content,
             thinking_time = thinking_time
         )
 
         # Add assistant's response to conversation
-        messages[[length(messages) + 1]] <- list(role = "assistant", content = parsed_data$content)
+        messages[[length(messages) + 1]] <- list(role = "assistant", content = step_data$content)
 
         # Safely print the assistant's response
-        message("Assistant: ", toString(parsed_data$content))
+        message("Assistant: ", toString(step_data$content))
 
         # Check for next_action
-        next_action <- tolower(trimws(parsed_data$next_action))
+        next_action <- tolower(trimws(step_data$next_action))
         cat("Next reasoning step: ", next_action, "\n")
 
         # Check if the content is empty or only whitespace
-        if (is.null(parsed_data$content) || trimws(toString(parsed_data$content)) == "") {
+        if (is.null(step_data$content) || trimws(toString(step_data$content)) == "") {
             message("Warning: Received empty response. Retrying...")
             next # Skip to the next iteration of the loop
         }
@@ -199,7 +188,7 @@ generate_response <- function(prompt, api_handler) {
     }
 
     # If we've reached this point, we already have the final answer
-    final_data <- parsed_data
+    final_data <- step_data
 
     # Add final answer to steps (if it's not already there)
     if (steps[[length(steps)]]$title != "Final Answer") {
