@@ -73,32 +73,34 @@ OllamaHandler <- R6::R6Class(
         make_request = function(messages, max_tokens) {
             prompt <- paste(sapply(messages, function(m) paste(m$role, m$content, sep = ": ")), collapse = "\n")
 
-
             data <- list(
                 model = self$model,
-                stream = FALSE,
                 prompt = prompt,
-
-                # reproducible results; if seed given and temp 0.
-                options = list(
-                    num_predict = max_tokens,
-                    top_p = self$top_p,
-                    temperature = self$temperature
-                )
+                stream = FALSE
             )
 
-            message(">> Data: ", data)
+            # Add optional parameters if they are set
+            if (!is.null(self$temperature)) {
+                data$temperature <- self$temperature
+            }
+            if (!is.null(self$top_p)) {
+                data$top_p <- self$top_p
+            }
+            if (!is.null(max_tokens)) {
+                data$num_predict <- max_tokens
+            }
 
             response <- httr::POST("http://localhost:11434/api/generate",
                 body = data,
                 encode = "json",
+                httr::write_memory()
             )
 
             if (httr::status_code(response) != 200) {
                 stop("Error in Ollama API call: ", httr::content(response, "text"))
             }
 
-            content <- httr::content(response, "parsed")
+            content <- httr::content(response, "text")
             return(content)
         },
         process_response = function(response, is_final_answer) {
