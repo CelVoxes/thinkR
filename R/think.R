@@ -158,7 +158,11 @@ generate_response <- function(prompt, api_handler) {
         messages[[length(messages) + 1]] <- list(role = "assistant", content = step_data$content)
 
         # Safely print the assistant's response
-        message("Assistant: ", toString(step_data$content))
+        message(
+            "\nAssistant: ",
+            crayon::bold(step_data$title), "\n",
+            crayon::blue(toString(step_data$content)), "\n"
+        )
 
         # Check for next_action
         next_action <- tolower(trimws(step_data$next_action))
