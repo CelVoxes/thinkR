@@ -156,45 +156,36 @@ generate_response <- function(prompt, api_handler) {
         thinking_time <- as.numeric(difftime(end_time, start_time, units = "secs"))
         total_thinking_time <- total_thinking_time + thinking_time
 
+        # Parse the JSON response
+        parsed_data <- tryCatch(
+            {
+                jsonlite::fromJSON(step_data$content)
+            },
+            error = function(e) {
+                message("Error parsing JSON response: ", e$message)
+                return(list(title = "Error", content = step_data$content, next_action = "continue"))
+            }
+        )
+
         # Store step information
         steps[[length(steps) + 1]] <- list(
-            title = paste("Step", step_count, ":", step_data$title),
-            content = step_data$content,
+            title = paste("Step", step_count, ":", parsed_data$title),
+            content = parsed_data$content,
             thinking_time = thinking_time
         )
 
         # Add assistant's response to conversation
-        messages[[length(messages) + 1]] <- list(role = "assistant", content = step_data$content)
+        messages[[length(messages) + 1]] <- list(role = "assistant", content = parsed_data$content)
 
         # Safely print the assistant's response
-        tryCatch(
-            {
-                if (is.character(step_data$content)) {
-                    message("Assistant: ", enc2utf8(step_data$content))
-                } else {
-                    message("Assistant: ", toString(step_data$content))
-                }
-            },
-            error = function(e) {
-                message("Error printing assistant's response: ", toString(e))
-            }
-        )
+        message("Assistant: ", toString(parsed_data$content))
 
-        # Check for next_action, with error handling
-        next_action <- tryCatch(
-            {
-                tolower(trimws(step_data$next_action))
-            },
-            error = function(e) {
-                warning("Error accessing next_action: ", e$message)
-                return("continue") # Default to continue if there's an error
-            }
-        )
-
+        # Check for next_action
+        next_action <- tolower(trimws(parsed_data$next_action))
         cat("Next reasoning step: ", next_action, "\n")
 
         # Check if the content is empty or only whitespace
-        if (is.null(step_data$content) || trimws(toString(step_data$content)) == "") {
+        if (is.null(parsed_data$content) || trimws(toString(parsed_data$content)) == "") {
             message("Warning: Received empty response. Retrying...")
             next # Skip to the next iteration of the loop
         }
@@ -207,37 +198,17 @@ generate_response <- function(prompt, api_handler) {
         step_count <- step_count + 1
     }
 
-    # Request final answer
-    messages[[length(messages) + 1]] <- list(
-        role = "user",
-        content = "Please provide the final answer based on your reasoning above."
-    )
+    # If we've reached this point, we already have the final answer
+    final_data <- parsed_data
 
-    # Generate and time the final answer
-    start_time <- Sys.time()
-    final_data <- api_handler$make_api_call(messages, 200, is_final_answer = TRUE)
-    end_time <- Sys.time()
-    thinking_time <- as.numeric(difftime(end_time, start_time, units = "secs"))
-    total_thinking_time <- total_thinking_time + thinking_time
-
-    # Check if the final answer is empty
-    if (trimws(final_data$content) == "") {
-        message("Warning: Received empty final answer. Using last non-empty step as final answer.")
-        # Find the last non-empty step
-        last_non_empty_step <- tail(which(sapply(steps, function(step) trimws(step$content) != "")), 1)
-        if (length(last_non_empty_step) > 0) {
-            final_data$content <- steps[[last_non_empty_step]]$content
-        } else {
-            final_data$content <- "Unable to generate a final answer."
-        }
+    # Add final answer to steps (if it's not already there)
+    if (steps[[length(steps)]]$title != "Final Answer") {
+        steps[[length(steps) + 1]] <- list(
+            title = "Final Answer",
+            content = final_data$content,
+            thinking_time = thinking_time
+        )
     }
-
-    # Add final answer to steps
-    steps[[length(steps) + 1]] <- list(
-        title = "Final Answer",
-        content = final_data$content,
-        thinking_time = thinking_time
-    )
 
     message("Final answer: ", final_data$content)
 
