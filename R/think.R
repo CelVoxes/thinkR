@@ -166,7 +166,7 @@ generate_response <- function(prompt, api_handler) {
                 return(list(title = "Error", content = step_data$content, next_action = "continue"))
             }
         )
-
+        message("Parsed data: ", parsed_data)
         # Store step information
         steps[[length(steps) + 1]] <- list(
             title = paste("Step", step_count, ":", parsed_data$title),
