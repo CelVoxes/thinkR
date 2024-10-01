@@ -105,24 +105,21 @@ OllamaHandler <- R6::R6Class(
         },
         process_response = function(response, is_final_answer) {
             # Parse the outer JSON structure
-            parsed_outer <- jsonlite::fromJSON(response)
-
-            # Extract and parse the inner JSON from the 'response' field
-            parsed_inner <- tryCatch(
+            parsed_text <- tryCatch(
                 {
-                    jsonlite::fromJSON(parsed_outer$response)
+                    jsonlite::fromJSON(response)
                 },
                 error = function(e) {
-                    message("Error parsing inner JSON: ", e$message)
-                    return(list(title = NULL, content = parsed_outer$response, next_action = NULL))
+                    message("Error parsing JSON: ", e$message)
+                    return(list(title = NULL, response = response, next_action = NULL))
                 }
             )
 
             # Return the parsed content
             return(list(
-                title = if (!is.null(parsed_inner$title)) parsed_inner$title else if (is_final_answer) "Final Answer" else "Reasoning Step",
-                content = if (!is.null(parsed_inner$content)) parsed_inner$content else parsed_outer$response,
-                next_action = if (!is.null(parsed_inner$next_action)) parsed_inner$next_action else if (is_final_answer) "final_answer" else "continue"
+                title = parsed_text$title,
+                content = parsed_text$response,
+                next_action = parsed_text$next_action
             ))
         }
     )
