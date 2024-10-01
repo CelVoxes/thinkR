@@ -98,36 +98,36 @@ OllamaHandler <- R6::R6Class(
             return(content)
         },
         process_response = function(response, is_final_answer) {
-            # Split the response into individual JSON objects
-            json_objects <- strsplit(response, "\n")[[1]]
+            # Split the response into individual lines
+            response_lines <- strsplit(response, "\n")[[1]]
 
-            # Parse each JSON object and extract the 'response' field
-            parsed_responses <- sapply(json_objects, function(json_str) {
-                tryCatch(
-                    {
-                        obj <- jsonlite::fromJSON(json_str)
-                        if (!is.null(obj$response)) obj$response else ""
-                    },
-                    error = function(e) ""
-                )
-            })
+            # Find the JSON content
+            json_line <- grep("^\\s*\\{", response_lines, value = TRUE)
 
-            # Combine all responses
-            full_response <- paste(parsed_responses, collapse = "")
+            if (length(json_line) == 0) {
+                # If no JSON is found, return the original response
+                return(list(
+                    title = if (is_final_answer) "Final Answer" else "Reasoning Step",
+                    content = response,
+                    next_action = if (is_final_answer) "final_answer" else "continue"
+                ))
+            }
 
-            # Try to parse the full response as JSON
+            # Parse the JSON content
             parsed_json <- tryCatch(
                 {
-                    jsonlite::fromJSON(full_response)
+                    jsonlite::fromJSON(json_line)
                 },
                 error = function(e) {
-                    list(title = NULL, content = full_response, next_action = NULL)
+                    message("Error parsing JSON: ", e$message)
+                    return(list(title = NULL, content = response, next_action = NULL))
                 }
             )
 
+            # Return the parsed content
             return(list(
                 title = if (!is.null(parsed_json$title)) parsed_json$title else if (is_final_answer) "Final Answer" else "Reasoning Step",
-                content = if (!is.null(parsed_json$content)) parsed_json$content else full_response,
+                content = if (!is.null(parsed_json$content)) parsed_json$content else response,
                 next_action = if (!is.null(parsed_json$next_action)) parsed_json$next_action else if (is_final_answer) "final_answer" else "continue"
             ))
         }
