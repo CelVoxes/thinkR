@@ -1,7 +1,7 @@
 Package: thinkR
 Type: Package
 Title: gpt-o1 like chain of thoughts with local LLMs in R 
-Version: 0.1.1
+Version: 0.1.2
 Author: Onur Karakaslar
 Maintainer: Onur Karakaslar <eonurkara@gmail.com>
 Description: gpt-o1 like chain of thoughts with local LLMs in R utilizing Ollama models.

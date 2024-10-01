@@ -79,7 +79,7 @@ OllamaHandler <- R6::R6Class(
                 temperature = self$temperature,
                 num_predict = max_tokens,
                 top_p = self$top_p,
-                stream = FALSE
+                stream = false
             )
 
 
