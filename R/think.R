@@ -104,37 +104,25 @@ OllamaHandler <- R6::R6Class(
             return(content)
         },
         process_response = function(response, is_final_answer) {
-            # Split the response into individual lines
-            response_lines <- strsplit(response, "\n")[[1]]
+            # Parse the outer JSON structure
+            parsed_outer <- jsonlite::fromJSON(response)
 
-            # Find the JSON content
-            json_line <- grep("^\\s*\\{", response_lines, value = TRUE)
-
-            if (length(json_line) == 0) {
-                # If no JSON is found, return the original response
-                return(list(
-                    title = if (is_final_answer) "Final Answer" else "Reasoning Step",
-                    content = response,
-                    next_action = if (is_final_answer) "final_answer" else "continue"
-                ))
-            }
-
-            # Parse the JSON content
-            parsed_json <- tryCatch(
+            # Extract and parse the inner JSON from the 'response' field
+            parsed_inner <- tryCatch(
                 {
-                    jsonlite::fromJSON(json_line)
+                    jsonlite::fromJSON(parsed_outer$response)
                 },
                 error = function(e) {
-                    message("Error parsing JSON: ", e$message)
-                    return(list(title = NULL, content = response, next_action = NULL))
+                    message("Error parsing inner JSON: ", e$message)
+                    return(list(title = NULL, content = parsed_outer$response, next_action = NULL))
                 }
             )
 
             # Return the parsed content
             return(list(
-                title = if (!is.null(parsed_json$title)) parsed_json$title else if (is_final_answer) "Final Answer" else "Reasoning Step",
-                content = if (!is.null(parsed_json$content)) parsed_json$content else response,
-                next_action = if (!is.null(parsed_json$next_action)) parsed_json$next_action else if (is_final_answer) "final_answer" else "continue"
+                title = if (!is.null(parsed_inner$title)) parsed_inner$title else if (is_final_answer) "Final Answer" else "Reasoning Step",
+                content = if (!is.null(parsed_inner$content)) parsed_inner$content else parsed_outer$response,
+                next_action = if (!is.null(parsed_inner$next_action)) parsed_inner$next_action else if (is_final_answer) "final_answer" else "continue"
             ))
         }
     )
