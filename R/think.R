@@ -166,7 +166,20 @@ generate_response <- function(prompt, api_handler) {
         # Add assistant's response to conversation
         messages[[length(messages) + 1]] <- list(role = "assistant", content = step_data$content)
 
-        message("Assistant: ", enc2utf8(step_data$content))
+        # Safely print the assistant's response
+        tryCatch(
+            {
+                if (is.character(step_data$content)) {
+                    message("Assistant: ", enc2utf8(step_data$content))
+                } else {
+                    message("Assistant: ", toString(step_data$content))
+                }
+            },
+            error = function(e) {
+                message("Error printing assistant's response: ", toString(e))
+            }
+        )
+
         # Check for next_action, with error handling
         next_action <- tryCatch(
             {
@@ -181,7 +194,7 @@ generate_response <- function(prompt, api_handler) {
         cat("Next reasoning step: ", next_action, "\n")
 
         # Check if the content is empty or only whitespace
-        if (trimws(step_data$content) == "") {
+        if (is.null(step_data$content) || trimws(toString(step_data$content)) == "") {
             message("Warning: Received empty response. Retrying...")
             next # Skip to the next iteration of the loop
         }
