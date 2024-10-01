@@ -76,13 +76,12 @@ OllamaHandler <- R6::R6Class(
             data <- list(
                 model = self$model,
                 prompt = prompt,
-                options = list(
-                    num_predict = max_tokens,
-                    temperature = self$temperature,
-                    top_p = self$top_p,
-                    stream = "false"
-                )
+                temperature = self$temperature,
+                num_predict = max_tokens,
+                top_p = self$top_p,
+                stream = FALSE
             )
+
 
             response <- httr::POST("http://localhost:11434/api/generate",
                 body = data,
