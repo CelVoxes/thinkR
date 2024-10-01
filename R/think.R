@@ -136,7 +136,6 @@ OllamaHandler <- R6::R6Class(
 
 # Function to generate response (similar to the Python version)
 generate_response <- function(prompt, api_handler) {
-
     # Initialize conversation
     messages <- list(
         list(role = "system", content = paste(thinkR::SYSTEM_PROMPT, collapse = "\n")),
@@ -181,6 +180,12 @@ generate_response <- function(prompt, api_handler) {
 
         cat("Next reasoning step: ", next_action, "\n")
 
+        # Check if the content is empty or only whitespace
+        if (trimws(step_data$content) == "") {
+            message("Warning: Received empty response. Retrying...")
+            next # Skip to the next iteration of the loop
+        }
+
         # Break loop if it's the final answer or step count exceeds 10
         if (next_action == "final_answer" || step_count > 10) {
             break
@@ -201,6 +206,18 @@ generate_response <- function(prompt, api_handler) {
     end_time <- Sys.time()
     thinking_time <- as.numeric(difftime(end_time, start_time, units = "secs"))
     total_thinking_time <- total_thinking_time + thinking_time
+
+    # Check if the final answer is empty
+    if (trimws(final_data$content) == "") {
+        message("Warning: Received empty final answer. Using last non-empty step as final answer.")
+        # Find the last non-empty step
+        last_non_empty_step <- tail(which(sapply(steps, function(step) trimws(step$content) != "")), 1)
+        if (length(last_non_empty_step) > 0) {
+            final_data$content <- steps[[last_non_empty_step]]$content
+        } else {
+            final_data$content <- "Unable to generate a final answer."
+        }
+    }
 
     # Add final answer to steps
     steps[[length(steps) + 1]] <- list(
