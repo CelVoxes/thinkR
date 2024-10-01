@@ -75,7 +75,7 @@ OllamaHandler <- R6::R6Class(
 
 
             data <- list(
-                model = model,
+                model = self$model,
                 stream = FALSE,
                 prompt = prompt,
 
@@ -86,6 +86,8 @@ OllamaHandler <- R6::R6Class(
                     temperature = self$temperature
                 )
             )
+
+            message(">> Data: ", data)
 
             response <- httr::POST("http://localhost:11434/api/generate",
                 body = data,
