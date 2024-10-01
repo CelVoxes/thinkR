@@ -105,7 +105,7 @@ OllamaHandler <- R6::R6Class(
         },
         process_response = function(response, is_final_answer) {
             # Parse the outer JSON structure
-            parsed_text <- tryCatch(
+            parsed_response <- tryCatch(
                 {
                     jsonlite::fromJSON(response)
                 },
@@ -115,11 +115,29 @@ OllamaHandler <- R6::R6Class(
                 }
             )
 
+            # Extract next_action from the parsed response
+            next_action <- if (!is.null(parsed_response$next_action)) {
+                parsed_response$next_action
+            } else if (!is.null(parsed_response$response)) {
+                # If next_action is not directly available, try to parse it from the response
+                content_json <- tryCatch(
+                    jsonlite::fromJSON(parsed_response$response),
+                    error = function(e) NULL
+                )
+                if (!is.null(content_json) && !is.null(content_json$next_action)) {
+                    content_json$next_action
+                } else {
+                    "continue" # Default value if next_action is not found
+                }
+            } else {
+                "continue" # Default value if response is not as expected
+            }
+
             # Return the parsed content
             return(list(
-                title = parsed_text$title,
-                content = parsed_text$response,
-                next_action = parsed_text$next_action
+                title = parsed_response$title,
+                content = parsed_response$response,
+                next_action = next_action
             ))
         }
     )
