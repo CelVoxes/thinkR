@@ -104,39 +104,44 @@ OllamaHandler <- R6::R6Class(
             return(content)
         },
         process_response = function(response, is_final_answer) {
-            # Parse the outer JSON structure
-            parsed_response <- tryCatch(
-                {
-                    jsonlite::fromJSON(response)
-                },
-                error = function(e) {
-                    message("Error parsing JSON: ", e$message)
-                    return(list(title = NULL, response = response, next_action = NULL))
-                }
-            )
+            # Split the response into individual JSON objects
+            json_strings <- strsplit(response, "}\n*\\{")[[1]]
+            json_strings <- paste0(ifelse(seq_along(json_strings) == 1, "", "{"), json_strings, ifelse(seq_along(json_strings) == length(json_strings), "", "}"))
 
-            # Extract next_action from the parsed response
-            next_action <- if (!is.null(parsed_response$next_action)) {
-                parsed_response$next_action
-            } else if (!is.null(parsed_response$response)) {
-                # If next_action is not directly available, try to parse it from the response
-                content_json <- tryCatch(
-                    jsonlite::fromJSON(parsed_response$response),
+            # Parse each JSON object
+            parsed_responses <- lapply(json_strings, function(json_str) {
+                tryCatch(
+                    jsonlite::fromJSON(json_str),
                     error = function(e) NULL
                 )
-                if (!is.null(content_json) && !is.null(content_json$next_action)) {
-                    content_json$next_action
-                } else {
-                    "continue" # Default value if next_action is not found
-                }
+            })
+
+            # Filter out NULL responses
+            parsed_responses <- Filter(Negate(is.null), parsed_responses)
+
+            # If no valid responses, return an error
+            if (length(parsed_responses) == 0) {
+                return(list(
+                    title = "Error",
+                    content = "Failed to parse any valid response",
+                    next_action = "continue"
+                ))
+            }
+
+            # Use the last valid response
+            last_response <- parsed_responses[[length(parsed_responses)]]
+
+            # Extract next_action, defaulting to "continue" if not found
+            next_action <- if (!is.null(last_response$next_action)) {
+                last_response$next_action
             } else {
-                "continue" # Default value if response is not as expected
+                "continue"
             }
 
             # Return the parsed content
             return(list(
-                title = parsed_response$title,
-                content = parsed_response$response,
+                title = last_response$title,
+                content = last_response$content,
                 next_action = next_action
             ))
         }
@@ -193,7 +198,7 @@ generate_response <- function(prompt, api_handler) {
         }
 
         # Break loop if it's the final answer or step count exceeds 10
-        if (next_action == "final_answer" || step_count > 10) {
+        if (next_action == "" || next_action == "final_answer" || step_count > 10) {
             break
         }
 
