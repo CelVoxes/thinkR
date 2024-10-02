@@ -77,7 +77,6 @@ OllamaHandler <- R6::R6Class(
                 collapse = "\n"
             )
 
-            warning(prompt)
             data <- list(
                 model = self$model,
                 prompt = prompt,
@@ -160,7 +159,7 @@ generate_response <- function(prompt, api_handler) {
     step_count <- 1
     total_thinking_time <- 0
 
-    lapply(messages, function(m) message(crayon::bold(enc2utf8(m$role)), ": ",  crayon::silver(enc2utf8(m$content))))
+    lapply(messages, function(m) message(crayon::bold(enc2utf8(m$role)), ": ", crayon::silver(enc2utf8(m$content))))
 
     # Main loop for generating reasoning steps
     repeat {
