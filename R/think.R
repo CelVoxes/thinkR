@@ -71,8 +71,13 @@ OllamaHandler <- R6::R6Class(
             self$top_p <- top_p
         },
         make_request = function(messages, max_tokens) {
-            prompt <- paste(sapply(messages, function(m) paste(m$role, m$content, sep = ": ")), collapse = "\n")
+            # prompt <- paste(sapply(messages, function(m) paste(m$role, m$content, sep = ": ")), collapse = "\n")
+            prompt <- paste(
+                vapply(messages, function(m) paste(m$role, m$content, sep = ": "), character(1)),
+                collapse = "\n"
+            )
 
+            warning(prompt)
             data <- list(
                 model = self$model,
                 prompt = prompt,
@@ -92,8 +97,7 @@ OllamaHandler <- R6::R6Class(
 
             response <- httr::POST("http://localhost:11434/api/generate",
                 body = data,
-                encode = "json",
-                httr::write_memory()
+                encode = "json"
             )
 
             if (httr::status_code(response) != 200) {
@@ -156,7 +160,8 @@ generate_response <- function(prompt, api_handler) {
     step_count <- 1
     total_thinking_time <- 0
 
-    lapply(messages, function(m) message(enc2utf8(m$role), ": ", enc2utf8(m$content)))
+    lapply(messages, function(m) message(crayon::bold(enc2utf8(m$role)), ": ",  crayon::silver(enc2utf8(m$content))))
+
     # Main loop for generating reasoning steps
     repeat {
         start_time <- Sys.time()
@@ -177,19 +182,23 @@ generate_response <- function(prompt, api_handler) {
 
         # Safely print the assistant's response
         message(
-            "\nAssistant: ",
-            crayon::bold(step_data$title), "\n",
-            crayon::blue(toString(step_data$content)), "\n"
+            crayon::bold("assistant: "),
+            crayon::italic(toString(step_data$title)), "\n",
+            crayon::silver(toString(step_data$content)), "\n"
         )
 
         # Check for next_action
         next_action <- tolower(trimws(step_data$next_action))
-        cat("Next reasoning step: ", next_action, "\n")
+        message("Next reasoning step: ", next_action)
 
-        # Check if the content is empty or only whitespace
         if (is.null(step_data$content) || trimws(toString(step_data$content)) == "") {
-            message("Warning: Received empty response. Retrying...")
-            next # Skip to the next iteration of the loop
+            message("Warning: Received empty response.")
+            step_count <- step_count + 1
+            if (step_count > 10) {
+                message("Maximum step count reached. Exiting loop.")
+                break
+            }
+            next
         }
 
         # Break loop if it's the final answer or step count exceeds 10
