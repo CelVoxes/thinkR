@@ -71,28 +71,13 @@ OllamaHandler <- R6::R6Class(
             self$top_p <- top_p
         },
         make_request = function(messages, max_tokens) {
-            # prompt <- paste(sapply(messages, function(m) paste(m$role, m$content, sep = ": ")), collapse = "\n")
-            prompt <- paste(
-                vapply(messages, function(m) paste(m$role, m$content, sep = ": "), character(1)),
-                collapse = "\n"
-            )
+            prompt <- paste(sapply(messages, function(m) paste(m$role, m$content, sep = ": ")), collapse = "\n")
 
             data <- list(
                 model = self$model,
                 prompt = prompt,
                 stream = FALSE
             )
-
-            # Add optional parameters if they are set
-            if (!is.null(self$temperature)) {
-                data$temperature <- self$temperature
-            }
-            if (!is.null(self$top_p)) {
-                data$top_p <- self$top_p
-            }
-            if (!is.null(max_tokens)) {
-                data$num_predict <- max_tokens
-            }
 
             response <- httr::POST("http://localhost:11434/api/generate",
                 body = data,
@@ -104,44 +89,47 @@ OllamaHandler <- R6::R6Class(
             }
 
             content <- httr::content(response, "text")
+
             return(content)
         },
         process_response = function(response, is_final_answer) {
             # Parse the outer JSON structure
-            parsed_response <- tryCatch(
-                {
-                    jsonlite::fromJSON(response)
-                },
-                error = function(e) {
-                    message("Error parsing JSON: ", e$message)
-                    return(list(title = NULL, response = response, next_action = NULL))
-                }
-            )
+            parsed_response <- jsonlite::fromJSON(response)
 
-            # Extract next_action from the parsed response
-            next_action <- if (!is.null(parsed_response$next_action)) {
-                parsed_response$next_action
-            } else if (!is.null(parsed_response$response)) {
-                # If next_action is not directly available, try to parse it from the response
-                content_json <- tryCatch(
-                    jsonlite::fromJSON(parsed_response$response),
-                    error = function(e) NULL
-                )
-                if (!is.null(content_json) && !is.null(content_json$next_action)) {
-                    content_json$next_action
-                } else {
-                    "continue" # Default value if next_action is not found
-                }
-            } else {
-                "continue" # Default value if response is not as expected
+            # Function to extract and parse JSON objects from text
+            extract_json <- function(text) {
+                json_pattern <- "\\{[^{}]*\\}"
+                matches <- gregexpr(json_pattern, text, perl = TRUE)
+                json_strings <- regmatches(text, matches)[[1]]
+
+                parsed_objects <- lapply(json_strings, function(json_str) {
+                    tryCatch(
+                        jsonlite::fromJSON(json_str),
+                        error = function(e) NULL
+                    )
+                })
+
+                # Remove NULL entries (failed parses)
+                parsed_objects <- Filter(Negate(is.null), parsed_objects)
+
+                return(parsed_objects)
             }
 
-            # Return the parsed content
-            return(list(
-                title = parsed_response$title,
-                content = parsed_response$response,
-                next_action = next_action
-            ))
+            # Extract and parse all JSON objects from the response
+            parsed_objects <- extract_json(parsed_response$response)
+
+            # Combine all parsed objects
+            combined_response <- list(
+                title = if (length(parsed_objects) > 0 && !is.null(parsed_objects[[1]]$title)) {
+                    parsed_objects[[1]]$title
+                } else if (is_final_answer) "Final Answer" else "Reasoning Step",
+                content = paste(sapply(parsed_objects, function(obj) obj$content), collapse = "\n"),
+                next_action = if (length(parsed_objects) > 0 && !is.null(parsed_objects[[length(parsed_objects)]]$next_action)) {
+                    parsed_objects[[length(parsed_objects)]]$next_action
+                } else if (is_final_answer) "final_answer" else "continue"
+            )
+
+            return(combined_response)
         }
     )
 )
@@ -182,26 +170,27 @@ generate_response <- function(prompt, api_handler) {
         # Safely print the assistant's response
         message(
             crayon::bold("assistant: "),
-            crayon::italic(toString(step_data$title)), "\n",
+            crayon::italic(crayon::silver(toString(step_data$title))), "\n",
             crayon::silver(toString(step_data$content)), "\n"
         )
 
         # Check for next_action
         next_action <- tolower(trimws(step_data$next_action))
-        message("Next reasoning step: ", next_action)
+        message("Next reasoning step: ", next_action, "\n")
 
         if (is.null(step_data$content) || trimws(toString(step_data$content)) == "") {
             message("Warning: Received empty response.")
             step_count <- step_count + 1
-            if (step_count > 10) {
-                message("Maximum step count reached. Exiting loop.")
-                break
-            }
             next
         }
 
+
+        if (step_count > 25) {
+            message("Maximum step count reached. Exiting loop.")
+            break
+        }
         # Break loop if it's the final answer or step count exceeds 10
-        if (next_action == "" || next_action == "final_answer" || step_count > 10) {
+        if (next_action == "final_answer") {
             break
         }
 
@@ -220,7 +209,7 @@ generate_response <- function(prompt, api_handler) {
         )
     }
 
-    message("Final answer: ", final_data$content)
+    message(crayon::green("Final answer: "), crayon::silver(final_data$content))
 
     # Return final results
     return(list(steps = steps, total_thinking_time = total_thinking_time))
