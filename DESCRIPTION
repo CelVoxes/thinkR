@@ -8,3 +8,10 @@ Description: gpt-o1 like chain of thoughts with local LLMs in R utilizing Ollama
 License: MIT
 Encoding: UTF-8
 LazyData: true
+Imports:rstudioapi,
+    jsonlite,
+    httr,
+    R6
+Suggests:
+    testthat
+RoxygenNote: 7.2.3

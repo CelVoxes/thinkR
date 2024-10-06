@@ -1,0 +1,4 @@
+Name: ThinkR Assistant
+Description: Chat with AI for R code assistance using ThinkR
+Binding: thinkr_addin
+Interactive: true

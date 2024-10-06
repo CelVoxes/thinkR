@@ -1,5 +1,4 @@
-thinkR
-================
+# thinkR
 
 ![](logo.webp)
 
@@ -10,7 +9,7 @@ ollama.
 
 To install ceLLama, use the following command:
 
-``` r
+```r
 devtools::install_github("eonurk/thinkR")
 ```
 
@@ -25,7 +24,7 @@ Download [`Ollama`](https://ollama.com/).
 Select your preferred model. For instance, to run the Llama3 model, use
 the following terminal command:
 
-``` bash
+```bash
 ollama run llama3.1
 ```
 
@@ -34,9 +33,18 @@ This initiates a local server, which can be verified by visiting
 
 #### Step 3: Think!
 
+#### Viewer
+
+```r
+library(thinkR)
+thinkr_addin()
+```
+
+#### API
+
 > Q: How many ’R’s are in strawberry?
 
-``` r
+```r
 library(thinkR)
 
 ## Usage example
@@ -58,9 +66,9 @@ Thinking…
     ##   "next_action": "continue"
     ## }
     ## ```
-    ## 
+    ##
     ## Reasoning Step 2: Approach 1 - Manual Counting
-    ## 
+    ##
     ## ```json
     ## {
     ##   "title": "Manual Counting Method",
@@ -69,9 +77,9 @@ Thinking…
     ##   "next_action": "continue"
     ## }
     ## ```
-    ## 
+    ##
     ## Reasoning Step 3: Approach 2 - Pattern Recognition
-    ## 
+    ##
     ## ```json
     ## {
     ##   "title": "Pattern Recognition Method",
@@ -80,19 +88,19 @@ Thinking…
     ##   "next_action": "continue"
     ## }
     ## ```
-    ## 
+    ##
     ## Reasoning Step 4: Alternative Count Method
-    ## 
+    ##
     ## ```json
     ## {
     ##   "title": "Alternative Counting Approach",
     ##   "content": "Considering the possibility that my initial count might be incorrect, I will re-check the word for any potential duplicates or errors
     ## Time: 26.6743881702423 s
-    ## 
+    ##
     ##  Step 2 : Reasoning Step
     ## Here's the revised response with the next step:
-    ## 
-    ## 
+    ##
+    ##
     ## ```json
     ## {
     ##   "title": "Alternative Count Method Confirmation",
@@ -101,9 +109,9 @@ Thinking…
     ##   "next_action": "final_answer"
     ## }
     ## ```
-    ## 
+    ##
     ## Reasoning Step 5: Confidence Level Validation
-    ## 
+    ##
     ## ```json
     ## {
     ##   "title": "Confidence Level Validation",
@@ -112,14 +120,14 @@ Thinking…
     ##   "next_action": "final_answer"
     ## }
     ## ```
-    ## 
+    ##
     ## The final answer is: $\boxed{2}$
     ## Time: 18.4936249256134 s
-    ## 
+    ##
     ##  Step 3 : Reasoning Step
     ## Here is the complete JSON response:
-    ## 
-    ## 
+    ##
+    ##
     ## ```json
     ## {
     ##   "title": "Initial Problem Decomposition",
@@ -149,11 +157,11 @@ Thinking…
     ##   "title": "Alternative Count Method Confirmation",
     ##   "content": "Upon reviewing the word 'strawberry' again, I
     ## Time: 28.58318400383 s
-    ## 
+    ##
     ##  Step 4 : Reasoning Step
     ## Here is the complete JSON response:
-    ## 
-    ## 
+    ##
+    ##
     ## ```json
     ## {
     ##   "title": "Initial Problem Decomposition",
@@ -183,11 +191,11 @@ Thinking…
     ##   "title": "Alternative Count Method Confirmation",
     ##   "content": "Upon reviewing the word 'strawberry' again, I
     ## Time: 30.5651700496674 s
-    ## 
+    ##
     ##  Step 5 : Reasoning Step
     ## Here is the complete JSON response:
-    ## 
-    ## 
+    ##
+    ##
     ## ```json
     ## {
     ##   "title": "Initial Problem Decomposition",
@@ -217,11 +225,11 @@ Thinking…
     ##   "title": "Alternative Count Method Confirmation",
     ##   "content": "Upon reviewing the word 'strawberry' again, I
     ## Time: 31.5878710746765 s
-    ## 
+    ##
     ##  Step 6 : Reasoning Step
     ## Here is the complete JSON response:
-    ## 
-    ## 
+    ##
+    ##
     ## ```json
     ## {
     ##   "title": "Initial Problem Decomposition",
@@ -251,25 +259,25 @@ Thinking…
     ##   "title": "Alternative Count Method Confirmation",
     ##   "content": "Upon reviewing the word 'strawberry' again, I
     ## Time: 32.4799299240112 s
-    ## 
+    ##
     ##  Step 7 : Reasoning Step
-    ## It seems like you are sharing a JSON response that contains multiple "steps" or approaches to solving a problem. 
-    ## 
+    ## It seems like you are sharing a JSON response that contains multiple "steps" or approaches to solving a problem.
+    ##
     ## To answer your question directly: The step that leverages understanding of linguistic patterns is mentioned in the third part of the JSON response, titled "Pattern Recognition Method".
-    ## 
+    ##
     ## Here's the relevant text:
-    ## 
+    ##
     ## "Recognizing that 'strawberry' ends with a repeated sequence of letters ('R-Y'), I can infer the presence of an additional 'R'. This step leverages understanding of linguistic patterns."
     ## Time: 17.4148399829865 s
-    ## 
+    ##
     ##  Step 8 : Reasoning Step
     ## It seems like you want to discuss something. What's on your mind? I'm here to listen and help if I can!
     ## Time: 10.5834898948669 s
-    ## 
+    ##
     ##  Step 9 : Reasoning Step
     ## It looks like there is a partial JSON response provided earlier:
-    ## 
-    ## 
+    ##
+    ##
     ## ```json
     ## {
     ##   "title": "Initial Problem Decomposition",
@@ -299,38 +307,38 @@ Thinking…
     ##   "title": "Alternative Count Method Confirmation",
     ##   "content": "Upon reviewing the word 'straw
     ## Time: 35.7588219642639 s
-    ## 
+    ##
     ##  Step 10 : Reasoning Step
-    ## It seems like you are sharing a JSON response that contains multiple "steps" or approaches to solving a problem. 
-    ## 
+    ## It seems like you are sharing a JSON response that contains multiple "steps" or approaches to solving a problem.
+    ##
     ## To answer your question directly: The step that leverages understanding of linguistic patterns is mentioned in the third part of the JSON response, titled "Pattern Recognition Method".
-    ## 
+    ##
     ## Here's the relevant text:
-    ## 
+    ##
     ## "Recognizing that 'strawberry' ends with a repeated sequence of letters ('R-Y'), I can infer the presence of an additional 'R'. This step leverages understanding of linguistic patterns."
-    ## 
+    ##
     ## This approach uses pattern recognition to understand how words are typically structured, which helps in solving the problem.
     ## Time: 19.26251912117 s
-    ## 
+    ##
     ##  Step 11 : Reasoning Step
     ## It seems like you're trying to discuss something related to counting and word analysis.
-    ## 
+    ##
     ## To summarize our conversation:
-    ## 
+    ##
     ## * You provided a JSON response with multiple steps or approaches to solving a problem.
     ## * One of those steps is titled "Pattern Recognition Method" and involves leveraging understanding of linguistic patterns.
     ## * This approach recognizes that the word "strawberry" ends with a repeated sequence of letters ("R-Y") and infers the presence of an additional 'R'.
-    ## 
+    ##
     ## If you'd like to discuss this further or explore other approaches, I'm here to listen and help!
     ## Time: 18.4433751106262 s
-    ## 
+    ##
     ##  Final Answer
     ## Based on the analysis provided earlier, the final answer is:
-    ## 
+    ##
     ## **The letter "R" appears 3 times in the word "strawberry".**
-    ## 
+    ##
     ## This conclusion was reached by leveraging understanding of linguistic patterns, as described in the "Pattern Recognition Method" step. By recognizing that "strawberry" ends with a repeated sequence of letters ("R-Y"), it can be inferred that there are indeed two 'R's present. The manual count or alternative counting approach would also confirm this result.
-    ## 
+    ##
     ## Therefore, the final answer is 3!
     ## Time: 19.0463080406189 s
 
@@ -358,3 +366,14 @@ Cursor is a great tool \<3
 ## License
 
 This project is licensed under the MIT License
+
+## RStudio Addin
+
+ThinkR now includes an RStudio addin with a chat interface for easy interaction with the AI assistant. To use the addin:
+
+1. Go to Addins > ThinkR Assistant in the RStudio menu.
+2. A chat interface will open in a new window.
+3. Enter your question or code in the text area and click "Submit".
+4. The AI's response will be displayed in the chat history.
+
+You can also customize the model, temperature, and top_p parameters for each query.

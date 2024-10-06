@@ -1,0 +1,134 @@
+body {
+	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+	background-color: #343541;
+	color: #ececf1;
+}
+
+.container-fluid {
+	height: 100vh;
+	padding-left: 0;
+	padding-right: 0;
+}
+
+.main-content {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+	width: 100%;
+	overflow: hidden; /* Add this line */
+}
+
+.chat-container {
+	display: flex;
+	flex-direction: column;
+	padding: 20px;
+	background-color: #343541;
+	flex-grow: 1; /* Add this line */
+	overflow-y: auto; /* Add this line */
+}
+
+.message {
+	display: flex;
+	margin-bottom: 20px;
+}
+
+.avatar {
+	width: 30px;
+	height: 30px;
+	border-radius: 3px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: bold;
+	margin-right: 20px;
+}
+
+.user-message .avatar {
+	background-color: #5c5c70;
+	color: white;
+}
+
+.assistant-message .avatar {
+	background-color: #10a37f;
+	color: white;
+}
+
+.message-content {
+	flex-grow: 1;
+	padding: 10px;
+	border-radius: 5px;
+}
+
+.user-message .message-content {
+	background-color: #444654;
+}
+
+.assistant-message .message-content {
+	background-color: #343541;
+}
+
+.input-area {
+	padding: 10px;
+	background-color: #343541;
+	position: sticky;
+	bottom: 0;
+	border-top: 1px solid #565869; /* Add this line */
+}
+
+.input-wrapper {
+	max-width: 800px;
+	margin: 0 auto;
+	display: flex;
+	align-items: center;
+}
+
+.input-group {
+	display: flex;
+	flex-grow: 1;
+	border-radius: 10px;
+	overflow: hidden;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#user_input {
+	flex-grow: 1;
+	background-color: #40414f;
+	color: #ececf1;
+	border: none;
+	padding: 10px 15px;
+	resize: none;
+	min-height: 40px;
+	max-height: 200px;
+	overflow-y: auto;
+	border-radius: 10px 0 0 10px;
+	margin-bottom: 0; /* Add this line to remove bottom margin */
+}
+
+.btn-send {
+	background-color: #3498db;
+	border: none;
+	color: #ffffff;
+	padding: 10px 20px;
+	cursor: pointer;
+	border-radius: 0 10px 10px 0;
+	transition: background-color 0.3s ease;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.btn-send:hover {
+	background-color: #2980b9;
+}
+
+.info-text {
+	text-align: center;
+	color: #8e8ea0;
+	font-size: 12px;
+	margin-top: 5px;
+}
+
+.loading-indicator {
+	margin-left: 10px;
+}
