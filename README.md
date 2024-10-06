@@ -40,6 +40,8 @@ library(thinkR)
 thinkr_addin()
 ```
 
+https://github.com/user-attachments/assets/4ae468fc-2bd9-44e1-8251-97cf5d83ebdb
+
 #### API
 
 > Q: How many ’R’s are in strawberry?
