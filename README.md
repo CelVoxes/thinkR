@@ -40,7 +40,7 @@ library(thinkR)
 thinkr_addin()
 ```
 
-https://github.com/user-attachments/assets/4ae468fc-2bd9-44e1-8251-97cf5d83ebdb
+https://github.com/user-attachments/assets/9d3ac5d6-84ad-4a9f-af28-37894a4d1ceb
 
 #### API
 
