@@ -7,10 +7,10 @@ ollama.
 
 ## Installation
 
-To install ceLLama, use the following command:
+To install thinkR, use the following command:
 
 ```r
-devtools::install_github("eonurk/thinkR")
+devtools::install_github("Celvoxes/thinkR")
 ```
 
 ## Usage
